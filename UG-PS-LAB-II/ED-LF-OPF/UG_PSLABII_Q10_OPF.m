@@ -47,3 +47,4 @@ if choice==2
     % xlswrite('C:\Users\RKSAMAL\Documents\MATLAB\Learning\PS-LAB-II\PS-LAB-II-IO.xlsx', busRES, 'EXP2', 'D6:L35');
     % xlswrite('C:\Users\RKSAMAL\Documents\MATLAB\Learning\PS-LAB-II\PS-LAB-II-IO.xlsx', genRES, 'EXP2', 'D40:I45');
 end
+
