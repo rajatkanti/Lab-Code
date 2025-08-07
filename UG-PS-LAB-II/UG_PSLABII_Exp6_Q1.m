@@ -22,7 +22,7 @@ clc;
 clear;
 
 
-###GENERATOR###
+%###GENERATOR###
 p1=50
 v1=11
 x1=0.15
@@ -31,25 +31,27 @@ xo=0.08
 %TO GET THE PU VALUE%
 zb=v1*v1/p1
 xn=2.5/zb
-###CHANGE IN THE VOLTAGE DUE TO THE TRANSFORMER###
+%###CHANGE IN THE VOLTAGE DUE TO THE TRANSFORMER###
 v2=132
-###TO GET THE PU VALUE###
+%###TO GET THE PU VALUE###
 zb1=(v2*v1)/p1
-X1=X2= 120/348.48
+X1= 120/348.48
+X2= 120/348.48
 X0=0.344*3
-X1=X2= (0.2*50)/30
+X1= (0.2*50)/30
+X2= (0.2*50)/30
 X0=0.266
-### TO GET THE PU VALUE###
+%### TO GET THE PU VALUE###
 ZB2=v1*v1/p1
 xn=3*xn
 lb=(50000/(sqrt(3)*11))
-### 3 PHASE FAULT ####
+%### 3 PHASE FAULT ####
 pf=lb/0.166
-### LLG fault###
+%### LLG fault###
 llg=3*lb/(0.166+0.166+3.365)
-###LL FAULT###
+%###LL FAULT###
 ll=lb/(0.166+0.166)
-###LLG Fault###
+%###LLG Fault###
 la0=1/(0.166+((0.166*3.365)/(0.166+3.365)))
 Va0=1-(la0*0.166)
 llg=3*lb*Va0/3.365
