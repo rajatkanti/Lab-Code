@@ -1,54 +1,53 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% This code is for Experiment No-4, Q9, UG Power System Lab-II
-% Fast Decoupled Method of Load Flow Solution
-% This can be run in MATLAB or OCTAVE
-% This code originally belongs to Hadi Saadat Book, Ch-6, Example-9
+% Load flow and Optimal Power Flow using MATPOWER software
+% $Author: Dr. Rajat Kanti Samal$ $Date: 27-Jun-2022 $    $Version: 1.0$
+% $Veer Surendra Sai University of Technology, Burla, Odisha, India$
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MATPOWER can run in both MATLAB and free open source OCTAVE 
+% Steps to download and install.
+% 1. Download MATPOWER software from https://matpower.org/ 
+% 2. Put the matpower directory in workspace
+% 3. Add the matpower subdirectories in the Set Path
+% 4. Download MATPOWER documentation
+% 5. The case file contains all information related to test system
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% If you are using MATPOWER6 in OCTAVE (Ubuntu) install the octave-optim package using
+% sudo apt-get install -y octave-optim
+% else use a higher version of MATPOWER.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clc;
-clear; 
+clear;
 
-V1= 1.05; V2 = 1.0; V3 = 1.04;
-d1 = 0; d2 = 0; d3=0;
-Ps2=-4;  Ps3 =2.0;
-Qs2= -2.5;
-YB = [ 20-j*50  -10+j*20    -10+j*30
-      -10+j*20   26-j*52    -16+j*32
-      -10+j*30  -16+j*32     26-j*62];
-Y = abs(YB); t=angle(YB);
-B =[-52 32; 32 -62]
-Binv = inv(B)
-iter=0;
-pwracur = 0.0003;  % Power accuracy
-DC = 10;           % Set the max of power mismatch to a high value
-while max(abs(DC)) > pwracur
-iter = iter +1;
-P2= V2*V1*Y(2,1)*cos(t(2,1)-d2+d1)+V2^2*Y(2,2)*cos(t(2,2))+ ...
-    V2*V3*Y(2,3)*cos(t(2,3)-d2+d3);
-P3= V3*V1*Y(3,1)*cos(t(3,1)-d3+d1)+V3^2*Y(3,3)*cos(t(3,3))+ ...
-    V3*V2*Y(3,2)*cos(t(3,2)-d3+d2);
-Q2=-V2*V1*Y(2,1)*sin(t(2,1)-d2+d1)-V2^2*Y(2,2)*sin(t(2,2))- ...
-    V2*V3*Y(2,3)*sin(t(2,3)-d2+d3);
-DP2 = Ps2 - P2; DP2V = DP2/V2;
-DP3 = Ps3 - P3; DP3V = DP3/V3;
-DQ2 = Qs2 - Q2; DQ2V = DQ2/V2;
-DC =[DP2; DP3; DQ2];
-Dd = -Binv*[DP2V;DP3V];
-DV = -1/B(1,1)*DQ2V;
+%% The following file contains all field information of mpc/results strut
+define_constants;
+baseMVA=100; 
 
-d2 =d2+Dd(1);
-d3 =d3+Dd(2);
-V2= V2+DV;
-angle2 =180/pi*d2;
-angle3 =180/pi*d3;
-R = [iter  d2  d3  V2  DP2  DP3 DQ2];
-disp(R)
+%% Load flow using MATPOWER 
+% load the case file (test system)
+mpc = loadcase('case30');
+% Refer P-32, MATPOWER6.0 manual for options
+mpopt = mpoption('pf.alg', 'NR', 'verbose', 1, 'out.all', 1);
+
+choice=input('Enter choice (1-Load flow; 2- OPF)-->');
+
+switch(choice)
+    case 1 % Load Flow
+        % runpf is the MATPOWER function for load flow
+        results = runpf(mpc,mpopt);
+
+    case 2 % Optimal Power Flow
+        %% Optimal Power Flow
+        results = runopf(mpc,mpopt);
 end
-Q3=-V3*V1*Y(3,1)*sin(t(3,1)-d3+d1)-V3^2*Y(3,3)*sin(t(3,3))- ...
-    V3*V2*Y(3,2)*sin(t(3,2)-d3+d2);
-P1= V1^2*Y(1,1)*cos(t(1,1))+V1*V2*Y(1,2)*cos(t(1,2)-d1+d2)+ ...
-    V1*V3*Y(1,3)*cos(t(1,3)-d1+d3);
-Q1=-V1^2*Y(1,1)*sin(t(1,1))-V1*V2*Y(1,2)*sin(t(1,2)-d1+d2)- ...
-    V1*V3*Y(1,3)*sin(t(1,3)-d1+d3);
-S1=P1+j*Q1
-Q3
+
+%% Write results in an output file
+if choice==2
+    busRES=results.bus(:,BUS_I:VA);
+    busRES(:,3:4)=busRES(:,3:4)/baseMVA; % convert to pu             
+    genRES=results.gen(:,GEN_BUS:VG);
+    genRES(:,2:5)=genRES(:,2:5)/baseMVA; % convert to pu                 
+    disp('Now writing results...')
+    % xlswrite('C:\Users\RKSAMAL\Documents\MATLAB\PS-LAB-II\PS-LAB-II-IO.xlsx', busRES, 'EXP2', 'D6:L35');
+    % xlswrite('C:\Users\RKSAMAL\Documents\MATLAB\PS-LAB-II\PS-LAB-II-IO.xlsx', genRES, 'EXP2', 'D40:I45');
+end
