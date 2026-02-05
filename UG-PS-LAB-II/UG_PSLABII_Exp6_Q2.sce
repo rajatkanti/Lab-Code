@@ -171,9 +171,9 @@ end
 
 plot(T,z1,T,z2,T,z3);
 set(gca(),"grid",[1 1]);
-legend('Sustained Fault','Fault cleared at 2.5 cycles','Fault cleared at 6.25 cycles',[,2]);
+legend('Sustained Fault','Fault cleared at 2.5 cycles','Fault cleared at 6.25 cycles');
 
-title('Swing Curves for Example 12.10 for a sustained fault and for clearing in 2.5 and 6.25 cycles','fontsize',2.4);
+title('Swing Curves for a sustained fault and for clearing in 2.5 and 6.25 cycles','fontsize',2.4);
 xlabel('Time (in seconds)----->');
 ylabel('Torque Angle (delta,deg)----->');
 f=get("current_figure") 
